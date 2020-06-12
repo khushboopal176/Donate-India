@@ -19,7 +19,7 @@ app.use(express.static(PublicDirPath))
 
 app.set('view engine', 'hbs')
 
-app.get('', (req,res) =>{
+app.get('/', (req,res) =>{
 
       res.render('home' , {
           title : 'Donate India'
