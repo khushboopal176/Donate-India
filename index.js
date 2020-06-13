@@ -19,7 +19,7 @@ app.use(express.static(PublicDirPath))
 
 app.set('view engine', 'hbs')
 
-app.get('', (req,res) =>{
+app.get('/', (req,res) =>{
 
       res.render('home' , {
           title : 'Donate India'
@@ -30,12 +30,23 @@ app.get('', (req,res) =>{
 
 app.get('/about', (req,res) =>{
     
-    res.send('About our website')
+    res.render('about' , {
+
+    })
 })
 
-app.get('/contact' , (req,res) => {
+app.get('/campaign' , (req,res) => {
 
-    res.send('This is us')
+    res.render('campaign' , {
+        
+    })
+})
+
+app.get('/donate' , (req,res) => {
+    
+    res.render('donate-form' , {
+
+    })
 })
 
 
