@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="/about.css">
+  <title>Donate India</title>
+</head>
+
+<body>
+  {{>nav}}
+  <div style="padding: 16px;">
+    <h1 id="name">
+      No Child homeless
+    </h1>
+    <h6>
+      (Received x out of y)
+    </h6>
+    <form id="contract-form">
+    <div class="form-group">
+      <label for="Amount">Amount to donate</label>
+      <input type="text" class="form-control" id="amount" aria-describedby="amountHelp"
+        placeholder="Amount to donate in ETH" required="true">
+      {{!-- <small id="amountHelp" class="form-text text-muted">How much you want to send in ETH.</small> --}}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  <br>
+  <br>
+  
+    <h6>
+      Previous Donations
+    </h6>
+    <table class="table" id="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Sender</th>
+        <th scope="col">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="/web31.min.js"></script>
+  <script src="/contractAbi.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+  <script>
+    let id = window.location.pathname.split('/')[2];
+    var contractAddress = '0x137E069C14b974782E1f480B0D13B43632910342';
+
+    //web3 = new Web3(window.web3.currentProvider || new Web3.providers.HttpProvider("http://localhost:9545"));
+
+    web3 = new Web3(window.ethereum)
+    window.ethereum.enable().catch(error => {
+      // User denied account access
+      console.log(error)
+    })
+
+    var version = web3.version;
+    console.log("using web3 version: " + version);
+
+    var ApprovalContract = new web3.eth.Contract(abi, contractAddress);
+
+    console.log(ApprovalContract);
+
+    $('#contract-form').submit(function () {
+      event.preventDefault();
+
+      var amount = $('#amount').val();
+      if (amount <= 0) {
+        alert('You must send more than 0 ETH.');
+        return;
+      }
+      ApprovalContract.methods.deposit(id).send({ from: web3.givenProvider.selectedAddress, gas: 3000000, value: web3.utils.toWei(amount,'ether') },
+        function (error, result) {
+          if (error) {
+            console.log('error: ' + error);
+            $('#deposit-result').html('Error: ' + error);
+          } else {
+            console.log(name + ' ' + amount);
+            $('#deposit-result').html('Success TX: <b>' + result + '</b>');
+          }
+        }) 
+    });
+
+     ApprovalContract.methods.transactionCount().call(
+      function (error, result) {
+        if (error) {
+          console.log('error: ' + error);
+        } else {
+          for (let i = 1; i <= result; i++) {
+            ApprovalContract.methods.transactions(i).call(
+              function (error, result) {
+                if (error) {
+                  console.log('error: ' + error);
+                } else {
+                    if(id == result._campaignId) {
+                  $("#table").append(`
+                  <tr>
+                    <th scope="row" style="vertical-align:middle">${result._id}</th>
+                    <td style="vertical-align:middle">${result._sender}</td>
+                    <td style="vertical-align:middle">${web3.utils.fromWei(result._amount, 'ether')}</td>
+                  </tr>
+                  `);
+                    }
+                  console.log('-->', result)
+                  $('#deposit-result').html('Success TX: <b>' + result + '</b>');
+                }
+              })
+          }
+        }
+      })
+  
+  </script>
+
+</body>
+
+</html>
