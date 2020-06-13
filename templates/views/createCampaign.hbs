@@ -26,8 +26,8 @@
     </div>
     <div class="form-group">
       <label for="Description">Description</label>
-      <input type="text" class="form-control" id="description" aria-describedby="descHelp"
-        placeholder="Enter Description" required="true">
+      <textarea class="form-control" id="description" rows="4" aria-describedby="descHelp"
+        placeholder="Enter Description (And where the money will be spent)" required="true" ></textarea>
     </div>
     <div class="form-group">
       <label for="Amount">Amount Required</label>
@@ -36,7 +36,7 @@
       {{!-- <small id="amountHelp" class="form-text text-muted">How much you want to send in ETH.</small> --}}
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <div id="deposit-result">Click the Submit button to register your campaign</div>
+    <div id="deposit-result"></div>
   </form>
 </div>
 
@@ -56,7 +56,7 @@
     crossorigin="anonymous"></script>
 
   <script>
-    var contractAddress = '0x137E069C14b974782E1f480B0D13B43632910342';
+    var contractAddress = '0x0aAf0CC15c7B408A4D669f405d7EB61655460dF3';
 
     //web3 = new Web3(window.web3.currentProvider || new Web3.providers.HttpProvider("http://localhost:9545"));
 

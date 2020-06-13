@@ -116,6 +116,11 @@ var abi = [
 				"internalType": "uint256",
 				"name": "_campaignId",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "_senderName",
+				"type": "string"
 			}
 		],
 		"name": "deposit",
@@ -165,6 +170,16 @@ var abi = [
 				"internalType": "address payable",
 				"name": "_receiver",
 				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_senderName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_campaignName",
+				"type": "string"
 			},
 			{
 				"internalType": "uint256",

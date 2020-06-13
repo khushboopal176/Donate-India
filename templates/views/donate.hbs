@@ -17,12 +17,18 @@
   {{>nav}}
   <div style="padding: 16px;">
     <h1 id="name">
-      No Child homeless
     </h1>
-    <h6>
-      (Received x out of y)
-    </h6>
+    <p id="desc"></p>
+    <div id="track">
+    </div>
     <form id="contract-form">
+        <br>
+    <div class="form-group">
+      <label for="Name">Name of Donor</label>
+      <input value="Anonymous" type="text" class="form-control" id="personName" aria-describedby="amountHelp"
+        placeholder="Amount to donate in ETH" required="true">
+      {{!-- <small id="amountHelp" class="form-text text-muted">How much you want to send in ETH.</small> --}}
+    </div>
     <div class="form-group">
       <label for="Amount">Amount to donate</label>
       <input type="text" class="form-control" id="amount" aria-describedby="amountHelp"
@@ -67,7 +73,7 @@
 
   <script>
     let id = window.location.pathname.split('/')[2];
-    var contractAddress = '0x137E069C14b974782E1f480B0D13B43632910342';
+    var contractAddress = '0x0aAf0CC15c7B408A4D669f405d7EB61655460dF3';
 
     //web3 = new Web3(window.web3.currentProvider || new Web3.providers.HttpProvider("http://localhost:9545"));
 
@@ -88,11 +94,12 @@
       event.preventDefault();
 
       var amount = $('#amount').val();
+      var personName = $('#personName').val();
       if (amount <= 0) {
         alert('You must send more than 0 ETH.');
         return;
       }
-      ApprovalContract.methods.deposit(id).send({ from: web3.givenProvider.selectedAddress, gas: 3000000, value: web3.utils.toWei(amount,'ether') },
+      ApprovalContract.methods.deposit(id, personName).send({ from: web3.givenProvider.selectedAddress, gas: 3000000, value: web3.utils.toWei(amount,'ether') },
         function (error, result) {
           if (error) {
             console.log('error: ' + error);
@@ -103,6 +110,25 @@
           }
         }) 
     });
+
+    ApprovalContract.methods.campaigns(id,).call(
+      function (error, result) {
+        if (error) {
+          console.log('error: ' + error);
+        } else {
+            var p = (result._received / result._goal) * 100;
+            $('#name').append(`${result._name}`);
+            $('#desc').append(`${result._description}`);
+            $('#track').append(`
+            <div class="progress">
+  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: ${p}%"></div>
+</div>
+      (Received ${web3.utils.fromWei(result._received, 'ether')} ETH out of ${web3.utils.fromWei(result._goal, 'ether')} ETH)
+            `);
+            
+        }
+      })
+  
 
      ApprovalContract.methods.transactionCount().call(
       function (error, result) {
@@ -119,7 +145,7 @@
                   $("#table").append(`
                   <tr>
                     <th scope="row" style="vertical-align:middle">${result._id}</th>
-                    <td style="vertical-align:middle">${result._sender}</td>
+                    <td style="vertical-align:middle">${result._sender} (${result._senderName})</td>
                     <td style="vertical-align:middle">${web3.utils.fromWei(result._amount, 'ether')}</td>
                   </tr>
                   `);

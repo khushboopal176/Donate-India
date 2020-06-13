@@ -38,6 +38,12 @@ app.get('/viewCamps', (req, res) => {
     })
 });
 
+app.get('/approve', (req, res) => {
+    res.render('approve', {
+        title: 'Donate India'
+    })
+});
+
 app.get('/donate/:id', (req, res) => {
     res.render('donate', {
         id: req.params.id,

@@ -21,10 +21,9 @@
     <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Name</th>
-        <th scope="col">Description</th>
+        <th scope="col">Sender</th>
+        <th scope="col">Campaign</th>
         <th scope="col">Goal</th>
-        <th scope="col">Received</th>
         <th></th>
       </tr>
     </thead>
@@ -67,37 +66,45 @@
 
     //    console.log(ApprovalContract);
 
-    ApprovalContract.methods.campaignCount().call(
+    ApprovalContract.methods.transactionCount().call(
       function (error, result) {
         if (error) {
           console.log('error: ' + error);
         } else {
           for (let i = 1; i <= result; i++) {
-            ApprovalContract.methods.campaigns(i).call(
+            ApprovalContract.methods.transactions(i).call(
               function (error, result) {
                 if (error) {
                   console.log('error: ' + error);
                 } else {
-                  result._goal == result._received ?
-                    $("#table").append(`
-                  <tr>
-                    <th scope="row" style="vertical-align:middle">${result._id}</th>
-                    <td style="vertical-align:middle">${result._name}</td>
-                    <td style="vertical-align:middle">${result._description}</td>
-                    <td style="vertical-align:middle">${web3.utils.fromWei(result._goal, 'ether')}</td>
-                    <td style="vertical-align:middle">${web3.utils.fromWei(result._received, 'ether')}</td>-=
-                  </tr>
-                  `) :
+                    result._approved ?
                   $("#table").append(`
                   <tr>
                     <th scope="row" style="vertical-align:middle">${result._id}</th>
-                    <td style="vertical-align:middle">${result._name}</td>
-                    <td style="vertical-align:middle">${result._description}</td>
-                    <td style="vertical-align:middle">${web3.utils.fromWei(result._goal, 'ether')}</td>
-                    <td style="vertical-align:middle">${web3.utils.fromWei(result._received, 'ether')}</td>-=
-                    <td><a href="/donate/${result._id}"><button type="button" class="btn btn-primary">Donate</button></a></td>
+                    <td style="vertical-align:middle">${result._sender} (${result._senderName})</td>
+                    <td style="vertical-align:middle">${result._campaignName}</td>
+                    <td></td>
+                  </tr>
+                  `) : 
+                  $("#table").append(`
+                  <tr>
+                    <th scope="row" style="vertical-align:middle">${result._id}</th>
+                    <td style="vertical-align:middle">${result._sender} (${result._senderName})</td>
+                    <td style="vertical-align:middle">${result._campaignName}</td>
+                    <td><button onclick="
+                        console.log(this.style.display = 'none');
+                        ApprovalContract.methods.approve(${result._id}).send({from: web3.givenProvider.selectedAddress},
+                            function (error, result) {
+                                if (error) {
+                                    console.log('error: ' + error);
+                                } else {
+                                    console.log(result);
+                                }
+                            });   
+                    " type="button" class="btn btn-primary">Approve</button></td>
                   </tr>
                   `);
+
                   console.log('-->', result)
                   $('#deposit-result').html('Success TX: <b>' + result + '</b>');
                 }
